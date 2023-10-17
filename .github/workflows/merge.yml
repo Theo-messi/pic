@@ -11,17 +11,14 @@ on:
   status: {}
 
 jobs:
-  automerge:
+  imgbot:
+    name: imgbot
     runs-on: ubuntu-latest
+    permissions: write-all
+    if: ${{ github.actor == 'imgbot[bot]' && github.event_name == 'pull_request'}}
     steps:
-      - name: automerge
-        uses: "pascalgn/automerge-action@v0.15.6"
+      - name: Enable auto-merge for imgbot PRs
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
-          GITHUB_TOKEN: "${{ secrets.GIT_MERGE_TOKEN }}"
-          MERGE_LABELS: ""
-          MERGE_METHOD: "squash"
-          MERGE_COMMIT_MESSAGE: "pull-request-description"
-          MERGE_FORKS: "false"
-          MERGE_RETRIES: "2"
-          MERGE_RETRY_SLEEP: "10000"
-          UPDATE_METHOD: "rebase"
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
